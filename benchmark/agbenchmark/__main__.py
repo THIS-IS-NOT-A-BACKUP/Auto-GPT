@@ -114,8 +114,8 @@ def run_benchmark(
     no_dep: bool = False,
     nc: bool = False,
     keep_answers: bool = False,
-    category: Optional[list[str]] = None,
-    skip_category: Optional[list[str]] = None,
+    category: Optional[tuple[str]] = None,
+    skip_category: Optional[tuple[str]] = None,
     test: Optional[str] = None,
     cutoff: Optional[int] = None,
     server: bool = False,
@@ -157,7 +157,6 @@ def run_benchmark(
 
     if test:
         print("Running specific test:", test)
-        pytest_args.extend(["-k", test, "--test"])
     else:
         # Categories that are used in the challenges
         categories = get_unique_categories()
@@ -218,12 +217,7 @@ def run_benchmark(
     return pytest.main(pytest_args)
 
 
-@click.group()
-def cli() -> None:
-    pass
-
-
-@cli.command()
+@click.group(invoke_without_command=True)
 @click.option("--backend", is_flag=True, help="If it's being run from the cli")
 @click.option("-c", "--category", multiple=True, help="Specific category to run")
 @click.option(
@@ -249,7 +243,8 @@ def cli() -> None:
 @click.option("--nc", is_flag=True, help="Run without cutoff")
 @click.option("--keep-answers", is_flag=True, help="Keep answers")
 @click.option("--cutoff", help="Set or override tests cutoff (seconds)")
-def start(
+@click.argument("value", type=str, required=False)
+def cli(
     maintain: bool,
     improve: bool,
     explore: bool,
@@ -262,8 +257,13 @@ def start(
     test: Optional[str] = None,
     cutoff: Optional[int] = None,
     backend: Optional[bool] = False,
+    value: Optional[str] = None,
 ) -> Any:
     # Redirect stdout if backend is True
+    if value == "start":
+        raise ("`agbenchmark start` is removed. Run `agbenchmark` instead.")
+    if value == "serve":
+        return serve()
     original_stdout = sys.stdout  # Save the original standard output
     exit_code = None
 
@@ -314,7 +314,6 @@ def version():
     print(f"Benchmark Tool Version {version}")
 
 
-@cli.command()
 def serve():
     import uvicorn
 

@@ -12,9 +12,9 @@ import pytest
 
 from agbenchmark.__main__ import CHALLENGES_ALREADY_BEATEN, UPDATES_JSON_PATH
 from agbenchmark.agent_api_interface import append_updates_file
+from agbenchmark.agent_protocol_client.models.step import Step
 from agbenchmark.utils.challenge import Challenge
 from agbenchmark.utils.data_types import AgentBenchmarkConfig, ChallengeData
-from agent_protocol_client.models.step import Step
 
 DATA_CATEGORY = {}
 
@@ -33,7 +33,7 @@ def create_single_test(
     DATA_CATEGORY[data["name"]] = data["category"][0]
 
     # Define test class dynamically
-    challenge_class = types.new_class(data["name"], (Challenge,))
+    challenge_class = types.new_class(f"Test{data['name']}", (Challenge,))
     print(challenge_location)
     # clean_challenge_location = get_test_path(challenge_location)
     setattr(challenge_class, "CHALLENGE_LOCATION", challenge_location)
@@ -115,7 +115,7 @@ def create_single_test(
 
     # Attach the new class to a module so it can be discovered by pytest
     module = importlib.import_module(__name__)
-    setattr(module, data["name"], challenge_class)
+    setattr(module, f"Test{data['name']}", challenge_class)
 
 
 def create_single_suite_challenge(challenge_data: ChallengeData, path: Path) -> None:
@@ -192,8 +192,12 @@ def generate_tests() -> None:  # sourcery skip: invert-any-all
                 continue
 
         # --test flag, only run the test if it's the exact one specified
-        test_flag = "--test" in commands
-        if test_flag and data["name"] not in commands:
+        tests = []
+        for command in commands:
+            if command.startswith("--test="):
+                tests.append(command.split("=")[1])
+
+        if tests and data["name"] not in tests:
             continue
 
         # --maintain and --improve flag

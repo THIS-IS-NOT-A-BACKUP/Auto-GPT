@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "agbenchmark"
-version = "0.0.9"
+version = "0.0.10"
 description = "Benchmarking the performance of agents far and wide, regardless of how they are set up and how they work"
 authors = ["Silen Naihin <silen.naihin@gmail.com>"]
 license = "MIT"
@@ -31,7 +31,6 @@ fastapi = "^0.99.0"
 python-multipart = "^0.0.6"
 toml = "^0.10.2"
 helicone = "^1.0.9"
-agent-protocol-client= { path = "agent_protocol_client" }
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^3.9.2"
