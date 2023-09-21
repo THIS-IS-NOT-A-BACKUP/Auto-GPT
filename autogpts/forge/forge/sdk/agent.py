@@ -1,15 +1,17 @@
 import asyncio
 import os
 import pathlib
+from io import BytesIO
 from uuid import uuid4
 
 from fastapi import APIRouter, FastAPI, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.responses import FileResponse, RedirectResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from hypercorn.asyncio import serve
 from hypercorn.config import Config
 
+from .abilities.registry import AbilityRegister
 from .db import AgentDB
 from .errors import NotFoundError
 from .forge_log import ForgeLogger
@@ -25,6 +27,7 @@ class Agent:
     def __init__(self, database: AgentDB, workspace: Workspace):
         self.db = database
         self.workspace = workspace
+        self.abilities = AbilityRegister(self)
 
     def start(self, port: int = 8000, router: APIRouter = base_router):
         """
@@ -196,17 +199,17 @@ class Agent:
             artifact = await self.db.get_artifact(artifact_id)
             file_path = os.path.join(artifact.relative_path, artifact.file_name)
             retrieved_artifact = self.workspace.read(task_id=task_id, path=file_path)
-            path = artifact.file_name
-            with open(path, "wb") as f:
-                f.write(retrieved_artifact)
         except NotFoundError as e:
             raise
         except FileNotFoundError as e:
             raise
         except Exception as e:
             raise
-        return FileResponse(
-            # Note: mimetype is guessed in the FileResponse constructor
-            path=path,
-            filename=artifact.file_name,
+
+        return StreamingResponse(
+            BytesIO(retrieved_artifact),
+            media_type="application/octet-stream",
+            headers={
+                "Content-Disposition": f"attachment; filename={artifact.file_name}"
+            },
         )
