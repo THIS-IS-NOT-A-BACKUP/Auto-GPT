@@ -53,14 +53,15 @@
 [Azure OpenAI docs]: https://learn.microsoft.com/en-us/azure/cognitive-services/openai/tutorials/embeddings?tabs=command-line
 
 
-### Start AutoGPT In A irtual Environment
+### Start AutoGPT In A Virtual Environment
 
 First we need to create a virtual environment to run in.
 
 ```shell
+pip3 install poetry
 python -m venv .venv
 source .venv/bin/activate
-pip3 install --upgrade pip
+poetry install
 ```
 
 !!! warning
@@ -82,4 +83,4 @@ packages and launch AutoGPT.
     ```
 
 If this gives errors, make sure you have a compatible Python version installed. See also
-the [requirements](./installation.md#requirements).
+the [requirements](/autogpt/setup/#requirements).
