@@ -31,7 +31,7 @@ click = "*"
 colorama = "^0.4.6"
 distro = "^1.8.0"
 docker = "*"
-duckduckgo-search = "^3.0.2"
+duckduckgo-search = "^4.0.0"
 en-core-web-sm = {url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.5.0/en_core_web_sm-3.5.0-py3-none-any.whl"}
 fastapi = "*"
 ftfy = "^6.1.1"
@@ -40,7 +40,6 @@ gTTS = "^2.3.1"
 hypercorn = "^0.14.4"
 inflection = "*"
 jsonschema = "*"
-markdown = "*"
 numpy = "*"
 openai = "^0.27.10"
 orjson = "^3.8.10"
@@ -70,6 +69,7 @@ openapi-python-client = "^0.14.0"
 agbenchmark = {git = "https://github.com/Significant-Gravitas/AutoGPT.git", subdirectory = "benchmark", optional = true}
 google-cloud-logging = "^3.8.0"
 google-cloud-storage = "^2.13.0"
+psycopg2-binary = "^2.9.9"
 
 [tool.poetry.extras]
 benchmark = ["agbenchmark"]
