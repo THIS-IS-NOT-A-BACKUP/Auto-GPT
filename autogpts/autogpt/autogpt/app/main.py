@@ -37,7 +37,7 @@ from autogpt.config import (
 from autogpt.core.resource.model_providers.openai import OpenAIProvider
 from autogpt.core.runner.client_lib.utils import coroutine
 from autogpt.file_storage import FileStorageBackendName, get_storage
-from autogpt.logs.config import configure_chat_plugins, configure_logging
+from autogpt.logs.config import LoggingConfig, configure_chat_plugins, configure_logging
 from autogpt.logs.helpers import print_attribute, speak
 from autogpt.models.action_history import ActionInterruptedByHuman
 from autogpt.plugins import scan_plugins
@@ -102,6 +102,7 @@ async def run_auto_gpt(
         level=log_level,
         log_format=log_format,
         log_file_format=log_file_format,
+        config=config.logging,
         tts_config=config.tts_config,
     )
 
@@ -389,6 +390,7 @@ async def run_auto_gpt_server(
         level=log_level,
         log_format=log_format,
         log_file_format=log_file_format,
+        config=config.logging,
         tts_config=config.tts_config,
     )
 

@@ -24,6 +24,7 @@ from autogpt.core.resource.model_providers.openai import (
     OpenAIModelName,
 )
 from autogpt.file_storage import FileStorageBackendName
+from autogpt.logs.config import LoggingConfig
 from autogpt.plugins.plugins_config import PluginsConfig
 from autogpt.speech import TTSConfig
 
@@ -58,6 +59,7 @@ class Config(SystemSettings, arbitrary_types_allowed=True):
     )
 
     # TTS configuration
+    logging: LoggingConfig = LoggingConfig()
     tts_config: TTSConfig = TTSConfig()
 
     # File storage
@@ -287,7 +289,7 @@ class ConfigBuilder(Configurable[Config]):
 
 def assert_config_has_openai_api_key(config: Config) -> None:
     """Check if the OpenAI API key is set in config.py or as an environment variable."""
-    key_pattern = r"^sk-\w{48}"
+    key_pattern = r"^sk-(proj-)?\w{48}"
     openai_api_key = (
         config.openai_credentials.api_key.get_secret_value()
         if config.openai_credentials
