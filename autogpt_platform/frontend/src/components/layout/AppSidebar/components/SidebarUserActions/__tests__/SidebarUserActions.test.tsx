@@ -4,17 +4,18 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { server } from "@/mocks/mock-server";
 
-import { InsetHeaderActions } from "../InsetHeaderActions";
+import { SidebarUserActions } from "../SidebarUserActions";
 
 const mockUseSupabase = vi.fn();
 vi.mock("@/lib/supabase/hooks/useSupabase", () => ({
   useSupabase: () => mockUseSupabase(),
 }));
 
-vi.mock(
-  "@/components/layout/Navbar/components/AgentActivityDropdown/AgentActivityDropdown",
-  () => ({ AgentActivityDropdown: () => <div data-testid="agent-activity" /> }),
-);
+vi.mock("@/components/ui/sidebar", async (importOriginal) => {
+  const actual = await importOriginal<object>();
+  return { ...actual, useSidebar: () => ({ state: "expanded" }) };
+});
+
 vi.mock("@/components/layout/Navbar/components/Wallet/Wallet", () => ({
   Wallet: () => <div data-testid="wallet" />,
 }));
@@ -25,10 +26,6 @@ vi.mock(
       <div data-testid="account-menu">{userName}</div>
     ),
   }),
-);
-vi.mock(
-  "@/app/(platform)/PlatformChrome/components/UsageIndicator/UsageIndicator",
-  () => ({ UsageIndicator: () => <div data-testid="usage-indicator" /> }),
 );
 
 beforeEach(() => {
@@ -48,28 +45,28 @@ afterEach(() => {
   server.resetHandlers();
 });
 
-describe("InsetHeaderActions", () => {
+describe("SidebarUserActions", () => {
   it("renders nothing when the viewer is logged out", () => {
     mockUseSupabase.mockReturnValue({
       user: null,
       isLoggedIn: false,
       isUserLoading: false,
     });
-    const { container } = render(<InsetHeaderActions />);
+    const { container } = render(<SidebarUserActions />);
     expect(container.firstChild).toBeNull();
   });
 
-  it("renders the header actions for a logged-in user", async () => {
+  it("renders the user actions row for a logged-in user", async () => {
     mockUseSupabase.mockReturnValue({
       user: { id: "u1", email: "alice@example.com", role: "user" },
       isLoggedIn: true,
       isUserLoading: false,
     });
-    render(<InsetHeaderActions />);
+    render(<SidebarUserActions />);
 
-    expect(screen.getByTestId("agent-activity")).toBeDefined();
-    expect(screen.getByTestId("usage-indicator")).toBeDefined();
     expect(screen.getByTestId("account-menu")).toBeDefined();
     expect(await screen.findByTestId("wallet")).toBeDefined();
+    expect(screen.queryByTestId("agent-activity")).toBeNull();
+    expect(screen.queryByTestId("usage-indicator")).toBeNull();
   });
 });
